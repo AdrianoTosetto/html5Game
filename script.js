@@ -7,14 +7,20 @@ var player = {
 	height:20,
 	width:80,
 	move:function(key){
-		if(key == 37){
-			this.x++;
+		if(key.keyCode == 37){
+			this.x-=3;
 			console.log(this.x);
-		}	
+		}
+		if(key.keyCode == 39){
+			this.x+=3;
+			console.log(this.x);
+		}
+
 	}
 };
 
 var draw = function(){
+	ctx.clearRect(0,0,canvas.height,canvas.width);
 	ctx.fillRect(player.x,player.y,player.width,player.height);
 }
 
@@ -33,5 +39,5 @@ window.onload = function(){
 	window.setInterval(function(){ //it will be used resquestAnimationFrame
 		update();
 		draw();
-	},500);
+	},100);
 }
