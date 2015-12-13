@@ -7,6 +7,8 @@
  *            \/      \/       \/               \/      |__|                 \/       \/                  \/    \/        
  */
 
+
+var collision = false;
 var canvas;
 var ctx;
 var enemies = [];
@@ -24,7 +26,7 @@ var Enemy  = function(x,y){
 			this.x = 0;
 			this.y+=15;
 		}else{
-			this.x+=10;
+			this.x+=5;
 		}
 	}
 }
@@ -74,6 +76,7 @@ var draw = function(){
 }
 
 var update = function(){
+	verifyCollisions();
 	document.onkeydown = function(key){
 		player.move(key);
 	}
@@ -92,15 +95,28 @@ var update = function(){
 	}
 }
 
+function verifyCollisions(){ //it needs to be improved
+	for(var i = 0; i < enemies.length;i++){
+		for(var j = 0; j < player.bullets.length;j++){
+			if(Math.abs(player.bullets[j].x - enemies[i].x) < 30 && Math.abs(player.bullets[j].y - enemies[i].y) < 20){
+				colision = true;
+				enemies.pop(i);
+				player.bullets.pop(j);
+				break;
+			}
+		}
+	}
+}
+
 function initEnemies(){ //grid of enemies: 4 x 8 
 	var ens = [];
 	var x = 20,y = 20;
-	for(var i = 0; i < 32;i++){
-		if(i % 8 == 0){
+	for(var i = 0; i < 16;i++){
+		if(i % 4 == 0){
 			y+=50;
 			x=20;
 		}
-		x+=50;
+		x+=80;
 		enemies.push(new Enemy(x,y));
 	}
 
@@ -116,5 +132,5 @@ window.onload = function(){
 	window.setInterval(function(){ //it will be used resquestAnimationFrame
 		update();
 		draw();
-	},50);
+	},25);
 }
