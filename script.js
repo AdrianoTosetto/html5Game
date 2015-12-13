@@ -9,6 +9,7 @@
 
 var canvas;
 var ctx;
+var enemies = [];
 var Enemy  = function(x,y){
 	this.x   = x;
 	this.y   = y;
@@ -16,9 +17,18 @@ var Enemy  = function(x,y){
 	this.draw = function(context){
 		var img = new Image();
 		img.src = this.src;
-		context.drawImage(img,0,0);
+		context.drawImage(img,this.x,this.y);
+	}
+	this.move = function(){
+		if(this.x > 500){
+			this.x = 0;
+			this.y+=15;
+		}else{
+			this.x+=10;
+		}
 	}
 }
+enemy = new Enemy(10,10);
 var Bullet =  function(x,y){
 	this.x = x;
 	this.y = y;
@@ -44,7 +54,7 @@ var player = {
 			var x = player.x + player.width/2 - player.bullets[0].width/2;
 			var y = player.y - player.height - 1;
 			this.bullets.push(new Bullet(x,y));
-			console.log(player.bullets.length)
+			
 		}
 	},
 	draw:function(context){
@@ -58,9 +68,9 @@ var draw = function(){
 	for(var i = 0; i < player.bullets.length;i++){
 		ctx.fillRect(player.bullets[i].x,player.bullets[i].y,player.bullets[0].width,player.bullets[0].height);	
 	}
-	
-	console.log(player.bullets[0].x);
-	new Enemy(10,10).draw(ctx);
+	for(var i = 0; i < enemies.length;i++){
+		enemies[i].draw(ctx);
+	}
 }
 
 var update = function(){
@@ -70,13 +80,35 @@ var update = function(){
 	document.onkeyup = function(key){
 		player.shoot(key);
 	}
-	for(var i = 0; i < player.bullets.length;i++){
-		player.bullets[i].y-=20;
+	for(var i = 1; i < player.bullets.length;i++){
+		if(player.bullets[i].y > 0){
+			player.bullets[i].y -= 20
+		}else{
+			player.bullets.pop(i);
+		}
+	}
+	for(var i = 0; i < enemies.length;i++){
+		enemies[i].move();
 	}
 }
 
-window.onload = function(){
+function initEnemies(){ //grid of enemies: 4 x 8 
+	var ens = [];
+	var x = 20,y = 20;
+	for(var i = 0; i < 32;i++){
+		if(i % 8 == 0){
+			y+=50;
+			x=20;
+		}
+		x+=50;
+		enemies.push(new Enemy(x,y));
+	}
 
+	return ens;
+}
+
+window.onload = function(){
+	initEnemies();
 	canvas =  document.getElementById("game");
 	ctx    = canvas.getContext("2d");
 	player.x = (canvas.width - player.width)/2;
