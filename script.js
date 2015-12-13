@@ -1,10 +1,20 @@
 var canvas;
 var ctx;
+var Enemy  = function(x,y){
+	this.x   = x;
+	this.y   = y;
+	this.src = "enemy.png";
+	this.draw = function(context){
+		var img = new Image();
+		img.src = this.src;
+		context.drawImage(img,0,0);
+	}
+}
 var Bullet =  function(x,y){
 	this.x = x;
 	this.y = y;
 	this.height = 20;
-	this.width  = 20;
+	this.width  = 5;
 };
 var player = {
 	bullets:[new Bullet(0,0)],
@@ -22,27 +32,37 @@ var player = {
 	},
 	shoot:function(key){
 		if(key.keyCode == 32){
-			this.bullets.push(new Bullet(player.x,player.y - player.height - 1));
+			var x = player.x + player.width/2 - player.bullets[0].width/2;
+			var y = player.y - player.height - 1;
+			this.bullets.push(new Bullet(x,y));
 			console.log(player.bullets.length)
 		}
+	},
+	draw:function(context){
+		context.fillRect(this.x,this.y,this.width,this.height);	
 	}
 };
 
 var draw = function(){
 	ctx.clearRect(0,0,canvas.height,canvas.width);
-	ctx.fillRect(player.x,player.y,player.width,player.height);
+	player.draw(ctx);
 	for(var i = 0; i < player.bullets.length;i++){
-		ctx.fillRect(player.bullets[i].x,player.bullets[i].y,20,20);	
+		ctx.fillRect(player.bullets[i].x,player.bullets[i].y,player.bullets[0].width,player.bullets[0].height);	
 	}
 	
 	console.log(player.bullets[0].x);
+	new Enemy(10,10).draw(ctx);
 }
 
 var update = function(){
 	document.onkeydown = function(key){
 		player.move(key);
+	}
+	document.onkeyup = function(key){
 		player.shoot(key);
-		
+	}
+	for(var i = 0; i < player.bullets.length;i++){
+		player.bullets[i].y-=20;
 	}
 }
 
